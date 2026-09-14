@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.stock.StockWatchlistMapper">
+
+    <resultMap type="com.ruoyi.system.domain.stock.StockWatchlist" id="StockWatchlistMap">
+        <id property="watchlistId" column="watchlist_id" />
+        <result property="userId" column="user_id" />
+        <result property="tsCode" column="ts_code" />
+        <result property="name" column="name" />
+        <result property="industry" column="industry" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.system.domain.stock.StockScreenResult" id="StockWatchlistJoinedMap">
+        <id property="resultId" column="result_id" />
+        <result property="runId" column="run_id" />
+        <result property="strategyCode" column="strategy_code" />
+        <result property="tradeDate" column="trade_date" />
+        <result property="tsCode" column="ts_code" />
+        <result property="name" column="name" />
+        <result property="industry" column="industry" />
+        <result property="peTtm" column="pe_ttm" />
+        <result property="pb" column="pb" />
+        <result property="roe" column="roe" />
+        <result property="dvTtm" column="dv_ttm" />
+        <result property="totalMvYi" column="total_mv_yi" />
+        <result property="closePrice" column="close_price" />
+        <result property="ma120" column="ma120" />
+        <result property="priceMa120Ratio" column="price_ma120_ratio" />
+        <result property="ma120Signal" column="ma120_signal" />
+        <result property="outOfPool" column="out_of_pool" />
+    </resultMap>
+
+    <insert id="insertWatchlist" parameterType="com.ruoyi.system.domain.stock.StockWatchlist" useGeneratedKeys="true" keyProperty="watchlistId">
+        insert into stock_watchlist (user_id, ts_code, name, industry, create_time)
+        values (#{userId}, #{tsCode}, #{name}, #{industry}, #{createTime})
+    </insert>
+
+    <delete id="deleteByUserIdAndTsCode">
+        delete from stock_watchlist where user_id = #{userId} and ts_code = #{tsCode}
+    </delete>
+
+    <select id="countByUserId" resultType="int">
+        select count(1) from stock_watchlist where user_id = #{userId}
+    </select>
+
+    <select id="selectCodesByUserId" resultType="String">
+        select ts_code from stock_watchlist where user_id = #{userId} order by create_time desc
+    </select>
+
+    <select id="selectByUserIdAndTsCode" resultMap="StockWatchlistMap">
+        select watchlist_id, user_id, ts_code, name, industry, create_time
+        from stock_watchlist
+        where user_id = #{userId} and ts_code = #{tsCode}
+    </select>
+
+    <select id="selectWatchlistJoined" resultMap="StockWatchlistJoinedMap">
+        select w.ts_code,
+               coalesce(r.name, w.name) as name,
+               coalesce(r.industry, w.industry) as industry,
+               r.pe_ttm, r.pb, r.roe, r.dv_ttm, r.total_mv_yi,
+               r.close_price, r.ma120, r.price_ma120_ratio, r.ma120_signal,
+               r.result_id, r.run_id, r.strategy_code, r.trade_date,
+               case when r.result_id is null then 1 else 0 end as out_of_pool
+        from stock_watchlist w
+        left join stock_screen_result r
+          on r.run_id = #{runId} and r.ts_code = w.ts_code
+        where w.user_id = #{userId}
+        <if test="query != null and query.tsCode != null and query.tsCode != ''">
+            and w.ts_code like concat('%', #{query.tsCode}, '%')
+        </if>
+        <if test="query != null and query.name != null and query.name != ''">
+            and coalesce(r.name, w.name) like concat('%', #{query.name}, '%')
+        </if>
+        <if test="query != null and query.industry != null and query.industry != ''">
+            and coalesce(r.industry, w.industry) like concat('%', #{query.industry}, '%')
+        </if>
+        <if test="query != null and query.peTtmMin != null"> and r.pe_ttm &gt;= #{query.peTtmMin}</if>
+        <if test="query != null and query.peTtmMax != null"> and r.pe_ttm &lt;= #{query.peTtmMax}</if>
+        <if test="query != null and query.pbMin != null"> and r.pb &gt;= #{query.pbMin}</if>
+        <if test="query != null and query.pbMax != null"> and r.pb &lt;= #{query.pbMax}</if>
+        <if test="query != null and query.roeMin != null"> and r.roe &gt;= #{query.roeMin}</if>
+        <if test="query != null and query.roeMax != null"> and r.roe &lt;= #{query.roeMax}</if>
+        <if test="query != null and query.dvTtmMin != null"> and r.dv_ttm &gt;= #{query.dvTtmMin}</if>
+        <if test="query != null and query.dvTtmMax != null"> and r.dv_ttm &lt;= #{query.dvTtmMax}</if>
+        <if test="query != null and query.totalMvYiMin != null"> and r.total_mv_yi &gt;= #{query.totalMvYiMin}</if>
+        <if test="query != null and query.totalMvYiMax != null"> and r.total_mv_yi &lt;= #{query.totalMvYiMax}</if>
+        <if test="query != null and query.closePriceMin != null"> and r.close_price &gt;= #{query.closePriceMin}</if>
+        <if test="query != null and query.closePriceMax != null"> and r.close_price &lt;= #{query.closePriceMax}</if>
+        <if test="query != null and query.ma120Min != null"> and r.ma120 &gt;= #{query.ma120Min}</if>
+        <if test="query != null and query.ma120Max != null"> and r.ma120 &lt;= #{query.ma120Max}</if>
+        <if test="query != null and query.priceMa120RatioMin != null"> and r.price_ma120_ratio &gt;= #{query.priceMa120RatioMin}</if>
+        <if test="query != null and query.priceMa120RatioMax != null"> and r.price_ma120_ratio &lt;= #{query.priceMa120RatioMax}</if>
+        <choose>
+            <when test="query != null and query.safeOrderBy != null and query.safeOrderBy != ''">
+                order by ${query.safeOrderBy}
+            </when>
+            <otherwise>
+                order by w.create_time desc, w.ts_code asc
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

@@ -1,0 +1,11 @@
+---
+description: 改筛股 Java/Vue/Python 时先读 alchemy conventions；改产品 UI 再读 design
+globs: "**/controller/stock/**,**/domain/stock/**,**/mapper/stock/**,**/service/impl/Stock*.java,**/service/IStock*.java,**/PythonScreeningJobRunner.java,**/StockScreenerProperties.java,**/task/StockScreeningTask.java,ruoyi-ui/src/views/stock/**,ruoyi-ui/src/api/stock/**,stock-screening-service/**"
+alwaysApply: false
+---
+
+# 筛股
+
+先读 [`docs/agent/alchemy/conventions.md`](docs/agent/alchemy/conventions.md)。
+
+改产品 UI（筛股/自选，自选复用筛股页）再读 [`docs/agent/alchemy/design/MASTER.md`](docs/agent/alchemy/design/MASTER.md) 与 [`docs/agent/alchemy/design/pages/screener.md`](docs/agent/alchemy/design/pages/screener.md)。

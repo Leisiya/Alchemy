@@ -1,0 +1,13 @@
+---
+description: 改登录/注册/找回密码/个人中心或首屏 splash 时读产品页视觉
+globs: "ruoyi-ui/src/views/login.vue,ruoyi-ui/src/views/register.vue,ruoyi-ui/src/views/forgetPassword.vue,ruoyi-ui/src/views/system/user/profile/**,ruoyi-ui/public/index.html"
+alwaysApply: false
+---
+
+# 认证与个人中心 UI
+
+先读 [`docs/agent/alchemy/design/MASTER.md`](docs/agent/alchemy/design/MASTER.md)。
+
+- 登录/注册/找回密码：[`docs/agent/alchemy/design/pages/login.md`](docs/agent/alchemy/design/pages/login.md)
+- 个人中心：[`docs/agent/alchemy/design/pages/profile.md`](docs/agent/alchemy/design/pages/profile.md)
+- `ruoyi-ui/public/index.html` 首屏：[`docs/agent/alchemy/design/pages/splash.md`](docs/agent/alchemy/design/pages/splash.md)

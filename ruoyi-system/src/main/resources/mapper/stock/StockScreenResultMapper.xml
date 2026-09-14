@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.stock.StockScreenResultMapper">
+
+    <resultMap type="com.ruoyi.system.domain.stock.StockScreenResult" id="StockScreenResultMap">
+        <id property="resultId" column="result_id" />
+        <result property="runId" column="run_id" />
+        <result property="strategyCode" column="strategy_code" />
+        <result property="tradeDate" column="trade_date" />
+        <result property="tsCode" column="ts_code" />
+        <result property="name" column="name" />
+        <result property="industry" column="industry" />
+        <result property="peTtm" column="pe_ttm" />
+        <result property="pb" column="pb" />
+        <result property="roe" column="roe" />
+        <result property="dvTtm" column="dv_ttm" />
+        <result property="totalMvYi" column="total_mv_yi" />
+        <result property="closePrice" column="close_price" />
+        <result property="ma120" column="ma120" />
+        <result property="priceMa120Ratio" column="price_ma120_ratio" />
+        <result property="ma120Signal" column="ma120_signal" />
+        <result property="outOfPool" column="out_of_pool" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="selectResultVo">
+        select result_id, run_id, strategy_code, trade_date, ts_code, name, industry, pe_ttm, pb, roe, dv_ttm,
+               total_mv_yi, close_price, ma120, price_ma120_ratio, ma120_signal, create_by, create_time
+        from stock_screen_result
+    </sql>
+
+    <select id="selectResultList" parameterType="com.ruoyi.system.domain.stock.StockScreenResult" resultMap="StockScreenResultMap">
+        <include refid="selectResultVo"/>
+        <where>
+            <if test="strategyCode != null and strategyCode != ''">
+                and strategy_code = #{strategyCode}
+            </if>
+            <if test="tradeDate != null and tradeDate != ''">
+                and trade_date = #{tradeDate}
+            </if>
+            <if test="signal != null and signal != ''">
+                and ma120_signal = #{signal}
+            </if>
+            <if test="tsCode != null and tsCode != ''">
+                and ts_code like concat('%', #{tsCode}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="industry != null and industry != ''">
+                and industry like concat('%', #{industry}, '%')
+            </if>
+            <if test="peTtmMin != null"> and pe_ttm &gt;= #{peTtmMin}</if>
+            <if test="peTtmMax != null"> and pe_ttm &lt;= #{peTtmMax}</if>
+            <if test="pbMin != null"> and pb &gt;= #{pbMin}</if>
+            <if test="pbMax != null"> and pb &lt;= #{pbMax}</if>
+            <if test="roeMin != null"> and roe &gt;= #{roeMin}</if>
+            <if test="roeMax != null"> and roe &lt;= #{roeMax}</if>
+            <if test="dvTtmMin != null"> and dv_ttm &gt;= #{dvTtmMin}</if>
+            <if test="dvTtmMax != null"> and dv_ttm &lt;= #{dvTtmMax}</if>
+            <if test="totalMvYiMin != null"> and total_mv_yi &gt;= #{totalMvYiMin}</if>
+            <if test="totalMvYiMax != null"> and total_mv_yi &lt;= #{totalMvYiMax}</if>
+            <if test="closePriceMin != null"> and close_price &gt;= #{closePriceMin}</if>
+            <if test="closePriceMax != null"> and close_price &lt;= #{closePriceMax}</if>
+            <if test="ma120Min != null"> and ma120 &gt;= #{ma120Min}</if>
+            <if test="ma120Max != null"> and ma120 &lt;= #{ma120Max}</if>
+            <if test="priceMa120RatioMin != null"> and price_ma120_ratio &gt;= #{priceMa120RatioMin}</if>
+            <if test="priceMa120RatioMax != null"> and price_ma120_ratio &lt;= #{priceMa120RatioMax}</if>
+        </where>
+        <choose>
+            <when test="safeOrderBy != null and safeOrderBy != ''">
+                order by ${safeOrderBy}
+            </when>
+            <when test="signal != null and signal == '破位低估'">
+                order by price_ma120_ratio asc, dv_ttm desc, ts_code asc
+            </when>
+            <when test="signal != null and signal == '强势突破'">
+                order by price_ma120_ratio desc, dv_ttm desc, ts_code asc
+            </when>
+            <otherwise>
+                order by dv_ttm desc, ts_code asc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectByRunIdAndTsCode" resultMap="StockScreenResultMap">
+        <include refid="selectResultVo"/>
+        where run_id = #{runId} and ts_code = #{tsCode}
+    </select>
+
+    <delete id="deleteByRunId" parameterType="Long">
+        delete from stock_screen_result where run_id = #{runId}
+    </delete>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into stock_screen_result (
+            run_id, strategy_code, trade_date, ts_code, name, industry, pe_ttm, pb, roe, dv_ttm, total_mv_yi,
+            close_price, ma120, price_ma120_ratio, ma120_signal, create_by, create_time
+        ) values
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.runId}, #{item.strategyCode}, #{item.tradeDate}, #{item.tsCode}, #{item.name}, #{item.industry},
+                #{item.peTtm}, #{item.pb}, #{item.roe}, #{item.dvTtm}, #{item.totalMvYi}, #{item.closePrice}, #{item.ma120},
+                #{item.priceMa120Ratio}, #{item.ma120Signal}, #{item.createBy}, sysdate()
+            )
+        </foreach>
+    </insert>
+</mapper>

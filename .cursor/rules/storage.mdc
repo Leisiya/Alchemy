@@ -1,0 +1,9 @@
+---
+description: 改 SQL 或 Mapper 时读 Alchemy 表与 Redis 归属
+globs: "sql/**,**/*Mapper.xml,**/mapper/stock/**"
+alwaysApply: false
+---
+
+# 存储
+
+先读 [`docs/agent/alchemy/data-storage.md`](docs/agent/alchemy/data-storage.md)。系统表 vs 本仓新建表以该文为准。

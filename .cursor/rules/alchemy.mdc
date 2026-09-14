@@ -1,0 +1,35 @@
+---
+description: Alchemy 短政策：中文、测试、系统工具、筛股页手工、Superpowers 流程、纠正回写；知识地图在 docs/agent/README.md
+alwaysApply: true
+---
+
+# Alchemy
+
+- 用简体中文。能本地验证的不要丢给用户手工做。
+- 改核心逻辑（校验、计算、规则）时补测试：后端 JUnit、前端现有 `node:test`、Python pytest。样板 getter/DTO 不强制。
+- 联调用 curl、浏览器 Network，或系统监控里的 Druid。标准 CRUD 手工或 AI 编写，**不用** `/tool/gen`（模块已移除）。表单构建与系统接口（Swagger）已从管理端移除。
+- 这是筛股数据产品，不是通用后台。仪表/榜单/用户产品页手工实现。
+- 地图：[`docs/agent/README.md`](docs/agent/README.md)。按任务读，勿整本粘贴进回复。
+- 冲突时以本 rule + [`docs/agent/alchemy/conventions.md`](docs/agent/alchemy/conventions.md) 为准。
+- 只在长期事实变化时改 `docs/agent/`（新表、新端口、视觉规格变了）。不要把某次任务的 spec/plan 写进 `docs/agent` 冒充现行约定。
+
+## Superpowers
+
+除 worktree 外，开发流程一步不省：brainstorming → writing-plans → 执行（优先 SDD，否则 executing-plans）→ 每步 TDD → 任务/整支 review → verification-before-completion → finishing-a-development-branch。Spec/plan 仍写 `docs/superpowers/`，不是现行架构。
+
+计划已拆成多任务时：**必须**走 SDD——控制器只派 implementer / task-reviewer、记账、过门闸，**禁止**自己动手写 Task 实现。只有用户当场指定 executing-plans 或单步小改才可本会话直接改代码。
+
+**Worktree 由 agent 按规模决定，开工先说一句「小/大」：**
+
+- **小需求**：不建 worktree，在当前工作区做。单层或单文件（文案、样式、已知 bug、一个接口/一个校验）；不新建表；不跨 Java+Vue+Python。
+- **大需求**：必须 worktree。跨 Java/Vue/Python 至少两边、新表或新 API+页、计划拆成多任务、或会弄脏当前分支上未完成的工作。
+
+用户当场指定用/不用 worktree 时，以用户为准。
+
+## 纠正回写
+
+用户纠正、review 打回、或联调复现同一类回归时：先回写，再改实现。没有回写不算纠正完成。
+
+- **能断言 → 测试**：JUnit / pytest / 现有 `node:test`，优先加在已有测试文件。先跑到红（证明能抓住这次错误），再改代码变绿。
+- **断言不了 → 短 rule**：在已有 `.mdc` 加 1～3 行；能 glob 就 glob。不要新开 alwaysApply 长文，不要写进 `docs/agent` 冒充现行约定。
+- **不回写**：笔误、本机环境、一次性 plan 写错。产品约定被破坏、已删除能力被加回、反复走错文档（Vue3、`/tool/gen`）才回写。

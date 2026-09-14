@@ -1,0 +1,281 @@
+@import './tokens.scss';
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: $color-auth-bg;
+  background-image: radial-gradient(circle at 50% 0%, #1b3a5f 0%, $color-auth-bg 60%);
+}
+
+.auth-title {
+  margin: 0 auto 10px auto;
+  text-align: center;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.auth-subtitle {
+  margin: 0 auto 16px auto;
+  text-align: center;
+  color: $color-auth-muted;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.auth-form {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  width: 420px;
+  max-width: calc(100% - 32px);
+  padding: 36px 32px 24px 32px;
+  z-index: 1;
+
+  ::v-deep .el-form-item {
+    margin-bottom: 32px;
+  }
+
+  ::v-deep .el-form-item:last-child {
+    margin-bottom: 0;
+  }
+
+  ::v-deep .el-form-item__content {
+    line-height: 46px;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  ::v-deep .el-form-item__error {
+    left: 0;
+    margin-left: 0;
+    line-height: 1.4;
+    padding-top: 6px;
+  }
+
+  ::v-deep .el-input {
+    height: 46px;
+  }
+
+  ::v-deep .el-input__inner {
+    height: 46px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-radius: 10px;
+    padding-left: 36px;
+
+    &::placeholder {
+      color: $color-auth-muted;
+    }
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  .input-icon {
+    height: 46px;
+    width: 16px;
+    margin-left: 4px;
+    color: $color-auth-muted;
+  }
+
+  ::v-deep .el-checkbox__label {
+    color: $color-auth-muted;
+  }
+
+  ::v-deep .el-checkbox__input.is-checked + .el-checkbox__label {
+    color: $color-primary;
+  }
+
+  ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: $color-primary;
+    border-color: $color-primary;
+  }
+
+  ::v-deep .el-button--primary {
+    background-color: $color-primary;
+    border-color: $color-primary;
+    border-radius: 10px;
+    height: 46px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color $motion-fast ease, border-color $motion-fast ease;
+
+    &:hover,
+    &:focus {
+      background-color: $color-primary-hover;
+      border-color: $color-primary-hover;
+    }
+  }
+
+  .auth-guest-btn {
+    width: 100%;
+    height: 46px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: $color-auth-muted;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color $motion-fast ease, border-color $motion-fast ease, color $motion-fast ease;
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      border-color: $color-primary;
+      color: #ffffff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-ring;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+}
+
+.auth-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 20px 0;
+}
+
+.auth-link {
+  color: $color-auth-muted;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-primary;
+  }
+
+  &.is-disabled {
+    color: #64748b;
+    cursor: not-allowed;
+  }
+}
+
+.auth-code {
+  width: 33%;
+  height: 46px;
+  float: right;
+}
+
+.auth-code-btn {
+  display: block;
+  width: 100%;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 10px;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-ring;
+    outline-offset: 2px;
+  }
+}
+
+.auth-otp-item {
+  ::v-deep .el-form-item__error {
+    left: 0;
+    margin-left: 0;
+    line-height: 1.4;
+    padding-top: 6px;
+  }
+}
+
+// Keep the OTP input on its own row wrapper. Putting flex+gap on
+// el-form-item__content lets Vue 2 slot whitespace become a flex item
+// and shift the whole field (icon + placeholder) by the gap.
+.auth-otp-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  font-size: 0;
+
+  ::v-deep .el-input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    margin-right: 8px;
+    font-size: 14px;
+  }
+}
+
+.auth-send-code {
+  white-space: nowrap;
+  flex: 0 0 118px;
+  height: 46px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color $motion-fast ease, border-color $motion-fast ease, color $motion-fast ease;
+
+  &:hover:not(:disabled) {
+    border-color: $color-primary;
+    color: #ffffff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-ring;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: #64748b;
+    cursor: not-allowed;
+  }
+}
+
+.auth-footer {
+  height: 40px;
+  line-height: 40px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: $color-auth-muted;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.auth-back {
+  margin-top: 10px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .auth-form {
+    padding: 28px 20px 20px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+}

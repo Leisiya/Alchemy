@@ -1,0 +1,18 @@
+[Unit]
+Description=Alchemy (RuoYi) Backend
+After=network.target mysql.service redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/alchemy
+EnvironmentFile=/opt/alchemy/conf/alchemy.env
+ExecStart=/usr/bin/java -jar /opt/alchemy/app/ruoyi-admin.jar
+SuccessExitStatus=143
+Restart=always
+RestartSec=10
+StandardOutput=append:/opt/alchemy/logs/backend.out.log
+StandardError=append:/opt/alchemy/logs/backend.err.log
+
+[Install]
+WantedBy=multi-user.target

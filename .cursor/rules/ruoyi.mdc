@@ -1,0 +1,8 @@
+---
+description: 若依权限、分页导出、前端路由 $tab/$modal、401/404 排障
+alwaysApply: false
+---
+
+# 若依底座
+
+按 [`docs/agent/README.md`](docs/agent/README.md) 的任务表读 `docs/agent/ruoyi-vue/` 对应篇。细节以 [`docs/agent/ruoyi-vue/SOURCE.md`](docs/agent/ruoyi-vue/SOURCE.md) 里的官方 URL 为准，不要整本粘贴。

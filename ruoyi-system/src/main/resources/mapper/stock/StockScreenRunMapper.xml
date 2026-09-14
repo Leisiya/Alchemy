@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.stock.StockScreenRunMapper">
+
+    <resultMap type="com.ruoyi.system.domain.stock.StockScreenRun" id="StockScreenRunResult">
+        <id property="runId" column="run_id" />
+        <result property="strategyCode" column="strategy_code" />
+        <result property="tradeDate" column="trade_date" />
+        <result property="status" column="status" />
+        <result property="totalCount" column="total_count" />
+        <result property="lowCount" column="low_count" />
+        <result property="highCount" column="high_count" />
+        <result property="errorMessage" column="error_message" />
+        <result property="startedAt" column="started_at" />
+        <result property="finishedAt" column="finished_at" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectRunVo">
+        select run_id, strategy_code, trade_date, status, total_count, low_count, high_count, error_message,
+               started_at, finished_at, create_by, create_time, update_by, update_time
+        from stock_screen_run
+    </sql>
+
+    <select id="selectByStrategyTradeDateAndStatus" resultMap="StockScreenRunResult">
+        <include refid="selectRunVo"/>
+        where strategy_code = #{strategyCode}
+          and trade_date = #{tradeDate}
+          and status = #{status}
+        limit 1
+    </select>
+
+    <select id="selectLatestSuccessRun" resultMap="StockScreenRunResult">
+        <include refid="selectRunVo"/>
+        where strategy_code = #{strategyCode}
+          and status = '0'
+        order by trade_date desc, finished_at desc
+        limit 1
+    </select>
+
+    <select id="selectLatestRun" resultMap="StockScreenRunResult">
+        <include refid="selectRunVo"/>
+        where strategy_code = #{strategyCode}
+        order by trade_date desc, finished_at desc, run_id desc
+        limit 1
+    </select>
+
+    <select id="selectSuccessTradeDates" resultType="String">
+        select trade_date
+        from stock_screen_run
+        where strategy_code = #{strategyCode}
+          and status = '0'
+        order by trade_date desc, finished_at desc
+    </select>
+
+    <insert id="insertRun" parameterType="com.ruoyi.system.domain.stock.StockScreenRun" useGeneratedKeys="true" keyProperty="runId">
+        insert into stock_screen_run (
+            strategy_code, trade_date, status, total_count, low_count, high_count, error_message,
+            started_at, finished_at, create_by, create_time, update_by, update_time
+        ) values (
+            #{strategyCode}, #{tradeDate}, #{status}, #{totalCount}, #{lowCount}, #{highCount}, #{errorMessage},
+            #{startedAt}, #{finishedAt}, #{createBy}, sysdate(), #{updateBy}, sysdate()
+        )
+    </insert>
+
+    <update id="updateRun" parameterType="com.ruoyi.system.domain.stock.StockScreenRun">
+        update stock_screen_run
+        set strategy_code = #{strategyCode},
+            trade_date = #{tradeDate},
+            status = #{status},
+            total_count = #{totalCount},
+            low_count = #{lowCount},
+            high_count = #{highCount},
+            error_message = #{errorMessage},
+            started_at = #{startedAt},
+            finished_at = #{finishedAt},
+            update_by = #{updateBy},
+            update_time = sysdate()
+        where run_id = #{runId}
+    </update>
+</mapper>
