@@ -1,8 +1,6 @@
 # Alchemy
 
-筛股数据产品，基于若依 [RuoYi-Vue 3.9.2](http://www.ruoyi.vip)（Spring Boot 4 / JDK 17 / Vue 2）。
-
-Alchemy 基于 RuoYi-Vue 3.9.2（http://www.ruoyi.vip），Apache-2.0。
+筛股数据产品，基于若依 [RuoYi-Vue 3.9.2](http://www.ruoyi.vip)（Spring Boot 4 / JDK 17 / Vue 2，Apache-2.0）。
 
 ## 本地启动
 
@@ -18,6 +16,7 @@ Alchemy 基于 RuoYi-Vue 3.9.2（http://www.ruoyi.vip），Apache-2.0。
 
 | 类别 | 变量 |
 | --- | --- |
+| JWT | `TOKEN_SECRET`（生产必须覆盖） |
 | Tushare | `TUSHARE_TOKEN` |
 | Python 筛股库 | `STOCK_DB_HOST`、`STOCK_DB_PORT`、`STOCK_DB_USER`、`STOCK_DB_PASSWORD`、`STOCK_DB_NAME` |
 | Java MySQL | `SPRING_DATASOURCE_DRUID_MASTER_URL`、`SPRING_DATASOURCE_DRUID_MASTER_USERNAME`、`SPRING_DATASOURCE_DRUID_MASTER_PASSWORD` |

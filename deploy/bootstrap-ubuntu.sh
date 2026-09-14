@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 首尔 Ubuntu 首次上线：目录、本机 MySQL/Redis、空库导表。
+# Ubuntu 首次上线引导：目录、本机 MySQL/Redis、空库导表。
 # 在仓库根目录：./deploy/bootstrap-ubuntu.sh
 # 之后再用 ./deploy/release.sh 发应用，./deploy/apply-nginx.sh 配站点。
 #

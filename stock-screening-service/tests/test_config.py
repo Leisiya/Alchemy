@@ -15,7 +15,7 @@ def test_get_tushare_token_raises_when_env_unset(monkeypatch):
         get_tushare_token()
 
 
-def test_get_tushare_token_raises_when_default_cleared(monkeypatch):
+def test_get_tushare_token_raises_when_env_blank(monkeypatch):
     monkeypatch.setenv("TUSHARE_TOKEN", "   ")
     with pytest.raises(RuntimeError, match="TUSHARE_TOKEN"):
         get_tushare_token()
