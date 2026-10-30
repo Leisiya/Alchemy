@@ -46,8 +46,9 @@ export default {
 
 <style lang="scss" scoped>
 .app-main {
-  min-height: 100vh;
-  height: 100vh;
+  /* fills the rest of .main-container (a flex column) below the navbar and guest banner */
+  flex: 1 1 0;
+  min-height: 0;
   width: 100%;
   position: relative;
   overflow-y: auto;
@@ -66,18 +67,9 @@ export default {
   padding-bottom: 36px;
 }
 
-.hasNavbar .app-main {
-  min-height: calc(100vh - 50px);
-  height: calc(100vh - 50px);
-}
-
-.hasNavbar .fixed-header + .app-main {
-  margin-top: 50px;
-}
-
-/* 移动端fixed-header优化 */
+/* 移动端fixed-header优化（~：访客横幅可能夹在导航栏和 app-main 之间） */
 @media screen and (max-width: 991px) {
-  .hasNavbar .fixed-header + .app-main {
+  .hasNavbar .fixed-header ~ .app-main {
     padding-bottom: max(60px, calc(constant(safe-area-inset-bottom) + 40px));
     padding-bottom: max(60px, calc(env(safe-area-inset-bottom) + 40px));
     overscroll-behavior-y: none;
@@ -86,11 +78,9 @@ export default {
 
 @supports (-webkit-touch-callout: none) {
   @media screen and (max-width: 991px) {
-    .hasNavbar .fixed-header + .app-main {
+    .hasNavbar .fixed-header ~ .app-main {
       padding-bottom: max(17px, calc(constant(safe-area-inset-bottom) + 10px));
       padding-bottom: max(17px, calc(env(safe-area-inset-bottom) + 10px));
-      height: calc(100svh - 50px);
-      height: calc(100dvh - 50px);
     }
   }
 }

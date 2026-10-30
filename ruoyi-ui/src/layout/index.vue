@@ -3,7 +3,7 @@
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
     <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
     <sidebar-collapse-toggle/>
-    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide,hasNavbar:needNavbar}" class="main-container">
+    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide,hasNavbar:needNavbar,hasFixedHeader:needNavbar&&fixedHeader}" class="main-container">
       <div v-if="needNavbar" :class="{'fixed-header':fixedHeader}">
         <navbar/>
         <tags-view v-if="needTagsView"/>
@@ -98,9 +98,20 @@ export default {
     }
   }
 
-  .main-container {
+  // Column flex: the page area (app-main) takes whatever height the navbar and guest banner leave.
+  // A fixed 100vh app-main overflowed by the banner height and the bottom (pagination) got clipped.
+  // #app raises specificity above sidebar.scss's `#app .main-container { height: 100% }`.
+  #app .main-container {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
+  }
+
+  // the fixed navbar is out of flow: reserve its height so the banner and page start below it
+  .main-container.hasFixedHeader {
+    padding-top: 50px;
   }
 
   .drawer-bg {
