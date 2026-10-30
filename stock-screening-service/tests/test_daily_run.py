@@ -4,7 +4,7 @@ from jobs import daily_run
 def test_main_success_calls_sync_screen_persist(monkeypatch):
     calls = []
     monkeypatch.setattr(daily_run, "get_connection", lambda: object())
-    monkeypatch.setattr(daily_run, "get_pro", lambda: object())
+    monkeypatch.setattr(daily_run, "build_market_data", lambda **_k: object())
     monkeypatch.setattr(daily_run, "run_sync", lambda *a, **k: calls.append("sync") or {"trade_date": "20260722"})
     monkeypatch.setattr(
         daily_run,
@@ -32,7 +32,7 @@ def test_main_failure_persists_failure_and_returns_1(monkeypatch):
             closed["done"] = True
 
     monkeypatch.setattr(daily_run, "get_connection", lambda: Conn())
-    monkeypatch.setattr(daily_run, "get_pro", lambda: object())
+    monkeypatch.setattr(daily_run, "build_market_data", lambda **_k: object())
     monkeypatch.setattr(daily_run, "run_sync", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
     monkeypatch.setattr(daily_run, "persist_failure", lambda *a, **k: 2)
     assert daily_run.main(["--trade-date", "20260722"]) == 1
@@ -47,7 +47,7 @@ def test_main_persists_failure_when_valuations_missing(monkeypatch):
             return None
 
     monkeypatch.setattr(daily_run, "get_connection", lambda: Conn())
-    monkeypatch.setattr(daily_run, "get_pro", lambda: object())
+    monkeypatch.setattr(daily_run, "build_market_data", lambda **_k: object())
     monkeypatch.setattr(
         daily_run,
         "run_sync",
@@ -64,7 +64,7 @@ def test_main_persists_failure_when_valuations_missing(monkeypatch):
 def test_main_skips_when_resolved_trade_date_is_not_today(monkeypatch):
     calls = []
     monkeypatch.setattr(daily_run, "get_connection", lambda: object())
-    monkeypatch.setattr(daily_run, "get_pro", lambda: object())
+    monkeypatch.setattr(daily_run, "build_market_data", lambda **_k: object())
     monkeypatch.setattr(daily_run, "ensure_trade_date", lambda *_a, **_k: "20260828")
     monkeypatch.setattr(daily_run, "calendar_today", lambda: "20260831")
     monkeypatch.setattr(daily_run, "run_sync", lambda *a, **k: calls.append("sync"))
@@ -78,7 +78,7 @@ def test_main_skips_when_resolved_trade_date_is_not_today(monkeypatch):
 def test_main_skips_when_success_run_already_exists(monkeypatch):
     calls = []
     monkeypatch.setattr(daily_run, "get_connection", lambda: object())
-    monkeypatch.setattr(daily_run, "get_pro", lambda: object())
+    monkeypatch.setattr(daily_run, "build_market_data", lambda **_k: object())
     monkeypatch.setattr(daily_run, "ensure_trade_date", lambda *_a, **_k: "20260831")
     monkeypatch.setattr(daily_run, "calendar_today", lambda: "20260831")
     monkeypatch.setattr(daily_run, "find_success_run", lambda *_a, **_k: 42)
@@ -91,7 +91,7 @@ def test_main_skips_when_success_run_already_exists(monkeypatch):
 def test_main_waits_when_valuations_missing_without_trade_date(monkeypatch):
     persist = {"success": 0, "failure": 0}
     monkeypatch.setattr(daily_run, "get_connection", lambda: type("C", (), {"close": lambda self: None})())
-    monkeypatch.setattr(daily_run, "get_pro", lambda: object())
+    monkeypatch.setattr(daily_run, "build_market_data", lambda **_k: object())
     monkeypatch.setattr(daily_run, "ensure_trade_date", lambda *_a, **_k: "20260831")
     monkeypatch.setattr(daily_run, "calendar_today", lambda: "20260831")
     monkeypatch.setattr(daily_run, "find_success_run", lambda *_a, **_k: None)

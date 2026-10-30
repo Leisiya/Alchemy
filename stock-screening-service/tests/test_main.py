@@ -8,13 +8,13 @@ import pipeline.sync_run as sync_run
 import pipeline.screen_run as screen_run
 
 
-def test_health_reports_tushare_data_source():
+def test_health_reports_data_source():
     client = TestClient(main.app)
     response = client.get("/health")
     assert response.status_code == 200
     body = response.json()
     assert body["strategy_code"] == "HIGH_DIVIDEND_MA120"
-    assert body["data_source"] == "tushare"
+    assert body["data_source"] == "tushare+free-fallback"
 
 
 def test_sync_run_calls_all_datasets_in_order(monkeypatch):
@@ -24,7 +24,7 @@ def test_sync_run_calls_all_datasets_in_order(monkeypatch):
     pro.trade_cal.return_value = pd.DataFrame({"cal_date": ["20260601"]})
 
     monkeypatch.setattr(main, "get_connection", lambda: conn)
-    monkeypatch.setattr(main, "get_pro", lambda: pro)
+    monkeypatch.setattr(main, "build_market_data", lambda **_k: pro)
 
     def make_sync(name):
         def _sync(*_a, **_k):
@@ -59,7 +59,7 @@ def test_sync_run_calls_all_datasets_in_order(monkeypatch):
 
 def test_screening_run_reads_from_repositories(monkeypatch):
     monkeypatch.setattr(main, "get_connection", lambda: MagicMock())
-    monkeypatch.setattr(main, "get_pro", lambda: MagicMock())
+    monkeypatch.setattr(main, "build_market_data", lambda **_k: MagicMock())
     monkeypatch.setattr(screen_run, "fetch_daily_basic", lambda _conn, _d: pd.DataFrame({
         "ts_code": ["A.SH"], "trade_date": ["20260601"], "pe_ttm": [10.0],
         "dv_ttm": [4.0], "total_mv": [600000.0], "pb": [1.0],

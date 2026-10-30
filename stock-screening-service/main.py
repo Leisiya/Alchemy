@@ -7,11 +7,12 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from clients.tushare_client import get_pro
 from db.connection import get_connection
+from db.repositories import fetch_stock_basic
 from pipeline.common import LOOKBACK_DAYS
 from pipeline.screen_run import run_screen
 from pipeline.sync_run import run_sync
+from sources.market_data import build_market_data
 from strategies.high_dividend_ma120 import STRATEGY_CODE
 
 app = FastAPI(title="Stock Screening Service", version="2.0.0")
@@ -59,13 +60,13 @@ class ScreeningResponse(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "strategy_code": STRATEGY_CODE, "data_source": "tushare"}
+    return {"status": "ok", "strategy_code": STRATEGY_CODE, "data_source": "tushare+free-fallback"}
 
 
 @app.post("/internal/sync/run")
 def sync_run_endpoint(payload: Optional[SyncRequest] = None):
     conn = get_connection()
-    pro = get_pro()
+    pro = build_market_data(universe=lambda: fetch_stock_basic(conn)["ts_code"].tolist())
     try:
         req = payload or SyncRequest()
         return run_sync(conn, pro, req.trade_date, req.lookback_days)
@@ -81,7 +82,7 @@ def sync_run_endpoint(payload: Optional[SyncRequest] = None):
 def run_screening(payload: Optional[ScreeningRequest] = None):
     conn = get_connection()
     try:
-        pro = get_pro()
+        pro = build_market_data(universe=lambda: fetch_stock_basic(conn)["ts_code"].tolist())
         trade_date = None if payload is None else payload.trade_date
         out = run_screen(conn, pro, trade_date)
         return ScreeningResponse(

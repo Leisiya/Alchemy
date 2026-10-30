@@ -1,4 +1,3 @@
-from clients.tushare_client import call_with_retry
 from db import repositories as repo
 
 DATASET = "DAILY_QUOTE"
@@ -8,8 +7,7 @@ def sync(conn, pro, anchor_date: str) -> int:
     if repo.has_synced(conn, DATASET, anchor_date):
         return 0
     try:
-        df = call_with_retry(
-            pro.daily,
+        df = pro.daily(
             trade_date=anchor_date,
             fields="ts_code,trade_date,open,high,low,close,pre_close,change,pct_chg,vol,amount",
         )

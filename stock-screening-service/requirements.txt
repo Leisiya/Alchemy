@@ -3,3 +3,6 @@ uvicorn[standard]==0.35.0
 pandas==2.3.0
 tushare
 pymysql>=1.1,<2
+requests>=2.31
+akshare>=1.20.16
+baostock>=0.9.4

@@ -1,4 +1,3 @@
-from clients.tushare_client import call_with_retry
 from db import repositories as repo
 
 DATASET = "STOCK_BASIC"
@@ -8,8 +7,7 @@ def sync(conn, pro, anchor_date: str) -> int:
     if repo.has_synced(conn, DATASET, anchor_date):
         return 0
     try:
-        df = call_with_retry(
-            pro.stock_basic,
+        df = pro.stock_basic(
             exchange="",
             list_status="L",
             fields="ts_code,symbol,name,area,industry,fullname,enname,cnspell,market,exchange,"

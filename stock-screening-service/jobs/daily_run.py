@@ -4,12 +4,13 @@ import sys
 from datetime import datetime
 from typing import Optional
 
-from clients.tushare_client import get_pro
 from db.connection import get_connection
+from db.repositories import fetch_stock_basic
 from db.screen_repositories import find_success_run, persist_failure, persist_success
 from pipeline.common import LOOKBACK_DAYS, ensure_trade_date
 from pipeline.screen_run import run_screen
 from pipeline.sync_run import run_sync
+from sources.market_data import build_market_data
 
 STRATEGY_CODE = "HIGH_DIVIDEND_MA120"
 logger = logging.getLogger(__name__)
@@ -33,9 +34,10 @@ def main(argv: Optional[list] = None) -> int:
     started_at = datetime.now().replace(microsecond=0)
     trade_date = args.trade_date or started_at.strftime("%Y%m%d")
     conn = None
+    pro = None
     try:
         conn = get_connection()
-        pro = get_pro()
+        pro = build_market_data(universe=lambda: fetch_stock_basic(conn)["ts_code"].tolist())
         resolved = ensure_trade_date(args.trade_date, pro)
         today = calendar_today()
         if not args.trade_date and resolved != today:
@@ -68,6 +70,7 @@ def main(argv: Optional[list] = None) -> int:
             row["trade_date"] = trade_date
             results.append(row)
         persist_success(conn, run, results)
+        logger.info("daily_run done: %s, %d results, sources %s", trade_date, len(results), getattr(pro, "used", {}))
         return 0
     except Exception as exc:
         if (
@@ -77,6 +80,7 @@ def main(argv: Optional[list] = None) -> int:
         ):
             logger.info("wait daily_run: %s", exc)
             return 0
+        logger.exception("daily_run failed for %s", trade_date)
         finished_at = datetime.now().replace(microsecond=0)
         if conn is not None:
             try:
@@ -85,9 +89,13 @@ def main(argv: Optional[list] = None) -> int:
                 pass
         return 1
     finally:
+        if pro is not None and hasattr(pro, "close"):
+            pro.close()
         if conn is not None and hasattr(conn, "close"):
             conn.close()
 
 
 if __name__ == "__main__":
+    # stdout/stderr end up in the backend log via the Java ProcessBuilder (inheritIO)
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [screener] %(name)s - %(message)s")
     sys.exit(main())

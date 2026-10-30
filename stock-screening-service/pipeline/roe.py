@@ -1,6 +1,5 @@
 from typing import Optional
 
-from clients.tushare_client import call_with_retry
 from db.repositories import fetch_fina_indicator, upsert_fina_indicator
 from pipeline.common import safe_float
 
@@ -56,11 +55,7 @@ def attach_candidate_roe(conn, pro, ts_codes, trade_date: str) -> dict[str, Opti
             if _eligible_fina_rows(rows, trade_date):
                 result[code] = pick_latest_roe(rows, trade_date)
                 continue
-            df = call_with_retry(
-                pro.fina_indicator,
-                ts_code=code,
-                fields=FINA_INDICATOR_FIELDS,
-            )
+            df = pro.fina_indicator(ts_code=code, fields=FINA_INDICATOR_FIELDS)
             fetched = df.to_dict("records") if df is not None and not df.empty else []
             fetched = _prefer_revised_fina_rows(fetched, trade_date)
             if fetched:
